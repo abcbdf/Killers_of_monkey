@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+var webHelper = require("webHelper")
 
 cc.Class({
     extends: cc.Component,
@@ -20,6 +21,7 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        //wh: require("webHelper"),
         // foo: {
         //     // ATTRIBUTES:
         //     default: null,        // The default value will be used only when the component attaching
@@ -42,7 +44,7 @@ cc.Class({
     // onLoad () {},
 
     start () {
-        // this.num = 0;
+        this.num = 0;
         // this.ws = new WebSocket("ws://localhost:8181");
         // this.ws.onopen = function (event) {
         //     console.log("Send Text WS was opened.");
@@ -56,6 +58,9 @@ cc.Class({
         // this.ws.onclose = function (event) {
         //     console.log("WebSocket instance closed.");
         // };
+        //this.wh = require("webHelper");
+        this.wh = new webHelper();
+        this.wh.connect("ws://localhost:8181");
     },
 
     test(){
@@ -69,15 +74,16 @@ cc.Class({
 
     update (dt) {
         // var obj = {a: "hhhh", b: "cccc"};
-        // if (this.num % 6 == 0){
-        //     if (this.ws.readyState === WebSocket.OPEN) {
-        //         //this.ws.send("Hello WebSocket, I'm a text message.");
-        //         this.ws.send(JSON.stringify(obj));
-        //     }
-        //     else {
-        //         //console.log("WebSocket instance wasn't ready...");
-        //     }
-        // }
-        // this.num += 1
+        if (this.num % 6 == 0){
+            // if (this.ws.readyState === WebSocket.OPEN) {
+            //     //this.ws.send("Hello WebSocket, I'm a text message.");
+            //     this.ws.send(JSON.stringify(obj));
+            // }
+            // else {
+            //     //console.log("WebSocket instance wasn't ready...");
+            // }
+            this.wh.test("hellotest");
+        }
+        this.num += 1
     },
 });
