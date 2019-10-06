@@ -42,12 +42,42 @@ cc.Class({
     // onLoad () {},
 
     start () {
-        for(var i = 0; i < 5; i++){
+        // this.num = 0;
+        // this.ws = new WebSocket("ws://localhost:8181");
+        // this.ws.onopen = function (event) {
+        //     console.log("Send Text WS was opened.");
+        // };
+        // this.ws.onmessage = function (event) {
+        //     console.log("response text msg: " + event.data);
+        // };
+        // this.ws.onerror = function (event) {
+        //     console.log("Send Text fired an error");
+        // };
+        // this.ws.onclose = function (event) {
+        //     console.log("WebSocket instance closed.");
+        // };
+    },
+
+    test(){
+        for(var i = 0; i < 15; i++){
             //var player_info = cc.instantiate(this.player_info_prefab);
             let new_card = cc.instantiate(this.m_Card_prefab);
             this.m_Scrollview.content.addChild(new_card);
+            new_card.y = -80
         }
     },
 
-    // update (dt) {},
+    update (dt) {
+        // var obj = {a: "hhhh", b: "cccc"};
+        // if (this.num % 6 == 0){
+        //     if (this.ws.readyState === WebSocket.OPEN) {
+        //         //this.ws.send("Hello WebSocket, I'm a text message.");
+        //         this.ws.send(JSON.stringify(obj));
+        //     }
+        //     else {
+        //         //console.log("WebSocket instance wasn't ready...");
+        //     }
+        // }
+        // this.num += 1
+    },
 });
