@@ -13,6 +13,14 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        m_BackGround:{
+            default: null,
+            type: cc.Node
+        },
+        m_Wait:{
+            default: null,
+            type: cc.Node
+        },
         m_Scrollview:{
             default: null,
             type: cc.ScrollView
@@ -45,22 +53,12 @@ cc.Class({
 
     start () {
         this.num = 0;
-        // this.ws = new WebSocket("ws://localhost:8181");
-        // this.ws.onopen = function (event) {
-        //     console.log("Send Text WS was opened.");
-        // };
-        // this.ws.onmessage = function (event) {
-        //     console.log("response text msg: " + event.data);
-        // };
-        // this.ws.onerror = function (event) {
-        //     console.log("Send Text fired an error");
-        // };
-        // this.ws.onclose = function (event) {
-        //     console.log("WebSocket instance closed.");
-        // };
-        //this.wh = require("webHelper");
+        this.canMove = false;
         this.wh = new webHelper();
+        this.wh.init(this);
         this.wh.connect("ws://localhost:8181");
+        //this.wh.ready();
+        //this.test();
     },
 
     test(){
@@ -82,8 +80,19 @@ cc.Class({
             // else {
             //     //console.log("WebSocket instance wasn't ready...");
             // }
-            this.wh.test("hellotest");
+            //this.wh.test("hellotest");
         }
         this.num += 1
     },
+
+    rWait (args) {
+        this.m_Wait.active = true;
+    },
+
+    rStart (args) {
+        this.m_Wait.active = false;
+        console.log("roomNumber: " + args.roomNumber);
+        console.log("memberId: " + args.memberId);
+        console.log("userId: " + args.userId);
+    }
 });
