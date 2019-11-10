@@ -3,12 +3,34 @@ import {Message} from "./msg";
 
 export {WebHelper};
 
+interface BaseHandler{
+    (msg: Message): void;
+}
+
+
 class WebHelper{
     private _controller: GameMain;
     ws: WebSocket;
 
+    readonly handlers: {[keys: string]: BaseHandler};
+    // readonly handlers: {[keys: string]: BaseHandler} = {
+    //     "TEST": this.rTest,
+    //     "WAITE": this._controller.rWait,
+    //     "ENTERROOM": this._controller.rStart,
+    //     "DRAWCARD": this._controller.rDrawCard,
+    //     "OPPONENTDRAWCARD": this._controller.rOpponentDrawCard,
+    // };
+
+    /*don't directly use this*/
     constructor(c: GameMain){
         this._controller = c;
+        this.handlers = {
+            "TEST": (msg: Message) => {this.rTest(msg)},
+            "WAITE": (msg: Message) => {this._controller.rWait(msg)},
+            "ENTERROOM": (msg: Message) => {this._controller.rStart(msg)},
+            "DRAWCARD": (msg: Message) => {this._controller.rDrawCard(msg)},
+            "OPPONENTDRAWCARD": (msg: Message) => {this._controller.rOpponentDrawCard(msg)},
+        };
     }
 
     connect(addr: string){
@@ -31,18 +53,10 @@ class WebHelper{
     }
 
     receive (data: string) {
-        let args: Message = JSON.parse(data);
-        switch (args.type) {
-            case "TEST":
-                this.rTest(args);
-                break;
-            case "WAITE":
-                this._controller.rWait(args);
-                break;
-            case "START":
-                this._controller.rStart(args);
-                break;
-        }
+        console.log(data);
+        let msg: Message = JSON.parse(data);
+        let handler = this.handlers[msg.type];
+        handler(msg);
     }
 
     rTest (args: Message) {

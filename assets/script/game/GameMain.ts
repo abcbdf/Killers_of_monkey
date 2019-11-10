@@ -1,5 +1,6 @@
 import {WebHelper} from "./WebHelper"
-import { Message } from "./msg";
+import {Message, CardData} from "./msg";
+import {Card} from "./Card";
 
 export {GameMain};
 
@@ -14,17 +15,25 @@ class GameMain extends cc.Component {
     // @property
     // text: string = 'hello';
     @property(cc.Node)
-    m_BackGround: cc.Node = null;
+    backGround: cc.Node  = null;
     @property(cc.Node)
-    m_Wait: cc.Node = null;
+    waitLabel: cc.Node = null;
     @property(cc.ScrollView)
-    m_Scrollview: cc.ScrollView = null;
+    myCardScrollview: cc.ScrollView = null;
+    @property(cc.ScrollView)
+    opponentCardScrollview: cc.ScrollView = null;
     @property(cc.Prefab)
-    m_Card_prefab: cc.Prefab = null;
+    cardPrefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    cardBackPrefab: cc.Prefab = null;
 
-    wh: WebHelper = null;
+    wh: WebHelper;
     frame_num: number = 0;
     movable: boolean = false;
+    myCardNum = 0;
+    opponentCardNum = 0;
+    // cardControllerList: Card[] = [];
+    // playerCardList: CardData[] = [];
 
 
     // LIFE-CYCLE CALLBACKS:
@@ -36,14 +45,15 @@ class GameMain extends cc.Component {
         this.movable = false;
         this.wh = new WebHelper(this);
         this.wh.connect("ws://localhost:8181");
+        
         //this.test_card();
     }
 
     test_card(){
         for(var i = 0; i < 15; i++){
             //var player_info = cc.instantiate(this.player_info_prefab);
-            let new_card = cc.instantiate(this.m_Card_prefab);
-            this.m_Scrollview.content.addChild(new_card);
+            let new_card = cc.instantiate(this.cardPrefab);
+            this.myCardScrollview.content.addChild(new_card);
             new_card.y = -80
         }
     }
@@ -63,15 +73,49 @@ class GameMain extends cc.Component {
         this.frame_num += 1
     }
 
-    rWait (args: Message) {
-        this.m_Wait.active = true;
+    rWait (msg: Message) {
+        this.waitLabel.active = true;
     }
 
-    rStart (args: Message) {
-        this.m_Wait.active = false;
-        console.log("roomNumber: " + args.roomNumber);
-        console.log("memberId: " + args.memberId);
-        console.log("userId: " + args.userId);
+    rStart (msg: Message) {
+        this.waitLabel.active = false;
+        // console.log("roomNumber: " + args.roomNumber);
+        // console.log("memberId: " + args.memberId);
+        // console.log("userId: " + args.userId);
+    }
+
+    rDrawCard (msg: Message)
+    {
+        for(let i = 0; i < 1; i ++){
+            this.myCardNum ++;
+            let myCardScrollViewSize = this.myCardScrollview.node.getContentSize();
+            let cardSize = this.cardPrefab.data.getContentSize();
+            let padding = Math.max((myCardScrollViewSize.width - cardSize.width * this.myCardNum) / 2, 0);
+            let new_card = cc.instantiate(this.cardPrefab);
+            this.myCardScrollview.content.addChild(new_card);
+            new_card.anchorY = 1;
+            //new_card.y = -80
+    
+            this.myCardScrollview.content.getComponent(cc.Layout).paddingLeft = padding;
+            this.myCardScrollview.content.getComponent(cc.Layout).paddingRight = padding;
+            let cardController = new_card.getComponent(Card);
+            cardController.init(msg.card);   
+        }
+     
+    }
+
+    rOpponentDrawCard (msg: Message)
+    {
+        this.opponentCardNum ++;
+        let opponentCardScrollViewSize = this.opponentCardScrollview.node.getContentSize();
+        let cardBackSize = this.cardBackPrefab.data.getContentSize();
+        let padding = Math.max((opponentCardScrollViewSize.width - cardBackSize.width * this.opponentCardNum) / 2, 0);
+        let new_card = cc.instantiate(this.cardBackPrefab);
+        this.opponentCardScrollview.content.addChild(new_card);
+        new_card.anchorY = 1;
+        this.opponentCardScrollview.content.getComponent(cc.Layout).paddingLeft = padding;
+        this.opponentCardScrollview.content.getComponent(cc.Layout).paddingRight = padding;
+
     }
 
 }
